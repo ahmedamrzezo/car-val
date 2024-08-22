@@ -1,2 +1,25 @@
-### Get all cars
-GET http://localhost:3000/api/hello
+### Get all users
+GET http://localhost:3000/auth
+
+### Get one user
+GET http://localhost:3000/auth/1
+
+### Create user
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "honda2@gmail.com",
+  "password": "123456"
+}
+
+### update user
+PATCH http://localhost:3000/auth/4
+Content-Type: application/json
+
+{
+  "password": "1234567"
+}
+
+### Delete user
+DELETE http://localhost:3000/auth/2
