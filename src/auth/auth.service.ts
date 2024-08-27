@@ -1,39 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { randomBytes, scryptSync } from 'crypto';
+
 
 @Injectable()
 export class AuthService {
-	constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
+	constructor(private usersService: UsersService) { }
 
-	createUser(email: string, password: string) {
-		const entity = this.userRepository.create({ email, password });
-		return this.userRepository.save(entity);
+	async signUp(email: string, password: string) {
+		const user = await this.usersService.find(email);
+
+		if (user.length) {
+			throw new BadRequestException('User email already exists!');
+		}
+		
+		const salt = randomBytes(8).toString('hex');
+
+		const hash = scryptSync(password, salt, 32).toString('hex');
+		const encryptedPassword = `${salt}.${hash}`;
+
+		return await this.usersService.createUser(email, encryptedPassword);
 	}
 
-	findOne(id: string) {
-		return this.userRepository.findOneBy({ id });
-	}
+	async signIn(email: string, password: string) {
+		const [user] = await this.usersService.find(email);
 
-	find(email: string) {
-		return this.userRepository.find({ where: { email } });
-	}
-
-	async update(id: string, changes: Partial<User>) {
-		const user = await this.findOne(id);
 		if (!user) {
 			throw new NotFoundException('User not found');
 		}
-		Object.assign(user, changes);
-		return this.userRepository.save(user);
-	}
 
-	async remove(id: string) {
-		const user = await this.findOne(id);
-		if (!user) {
-			throw new NotFoundException('User not found');
+		const [salt, savedHash] = user.password.split('.');
+		const hash = scryptSync(password, salt, 32).toString('hex');
+		
+		if (hash !== savedHash) {
+			throw new ForbiddenException('Invalid password');
 		}
-		return this.userRepository.remove(user);
-	 }
+		return user;
+	}
 }

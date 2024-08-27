@@ -2,19 +2,31 @@
 GET http://localhost:3000/auth
 
 ### Get one user
-GET http://localhost:3000/auth/1
+GET http://localhost:3000/auth/7
 
 ### Create user
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-  "email": "honda2@gmail.com",
+  "email": "honda3@gmail.com",
   "password": "123456"
 }
 
+### sign in
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "honda@gmail.com",
+  "password": "123456"
+}
+
+### sign out
+POST http://localhost:3000/auth/signout
+
 ### update user
-PATCH http://localhost:3000/auth/4
+PATCH http://localhost:3000/auth/8
 Content-Type: application/json
 
 {
@@ -22,4 +34,7 @@ Content-Type: application/json
 }
 
 ### Delete user
-DELETE http://localhost:3000/auth/2
+DELETE http://localhost:3000/auth/6
+
+### Get current user
+GET http://localhost:3000/auth/current
