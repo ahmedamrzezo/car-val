@@ -1,0 +1,24 @@
+### Get estimate reports
+GET http://localhost:3000/reports?make=Toyota&model=Corolla&year=2020&mileage=50000&lng=34.3456&lat=12.3456
+
+### create report
+POST http://localhost:3000/reports
+Content-Type: application/json
+
+{
+  "make": "Toyota",
+  "model": "Corolla",
+  "price": 110000,
+  "year": 2003,
+  "mileage": 50000,
+  "lng": 34.3456,
+  "lat": 12.3456
+}
+
+### approve report
+PATCH http://localhost:3000/reports/6
+Content-Type: application/json
+
+{
+  "approved": false
+}
