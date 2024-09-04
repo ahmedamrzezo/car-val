@@ -7,9 +7,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
-import { User } from './auth/user.entity';
-import Report from './reports/report.entity';
-import { DB_NAME, COOKIE_KEY } from './constants';
+import { COOKIE_KEY } from './constants';
+import { TypeOrmConfigService } from './config/typeorm.config';
 
 const cookieSession = require('cookie-session');
 
@@ -19,15 +18,7 @@ const cookieSession = require('cookie-session');
       isGlobal: true,
       envFilePath: `env/.env.${process.env.NODE_ENV}`,
     }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: configService.get(DB_NAME),
-        entities: [User, Report],
-        synchronize: true,
-      }),
-    }),
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     AuthModule,
     ReportsModule
   ],
